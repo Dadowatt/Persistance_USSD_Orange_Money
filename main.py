@@ -89,6 +89,7 @@ def effectuer_transfert(solde, historique):
     
     ecrire_historique(historique)  # écrire l'historique à chaque transfert
     # Enregistrez le dernier transfert pour le retour
+    demander_code_secret()
     print(f"Transfert de {montant} vers {numero} effectué avec succès")
     solde -= montant  # Soustraire du solde
     print(f"Nouveau solde : {solde}")
