@@ -2,26 +2,36 @@
     {
         "type": "transfert",
         "numero": "776655420",
-        "montant": 500.0
+        "montant": 300.0
     },
     {
         "type": "transfert",
-        "numero": "775131348",
+        "numero": "774562766",
+        "montant": 800.0
+    },
+    {
+        "type": "transfert annulé",
+        "montant": 800.0,
+        "numero": "774562766"
+    },
+    {
+        "type": "transfert",
+        "numero": "776308888",
         "montant": 1000.0
     },
     {
         "type": "transfert",
-        "numero": "789086547",
-        "montant": 700.0
+        "numero": "774529001",
+        "montant": 200.0
     },
     {
         "type": "transfert",
-        "numero": "765421767",
-        "montant": 600.0
+        "numero": "761073452",
+        "montant": 500.0
     },
     {
-        "type": "transfert",
-        "numero": "785412367",
-        "montant": 100.0
+        "type": "transfert annulé",
+        "montant": 500.0,
+        "numero": "761073452"
     }
 ]

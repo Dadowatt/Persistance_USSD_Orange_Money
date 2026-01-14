@@ -20,11 +20,11 @@ def lire_solde():
         return 10000  #valeur par defaut
 
 def ecrire_solde(solde):
-    with open('solde.json', 'w', encoding='utf-8') as f:
+    with open('solde.json', 'w') as f:
         json.dump({'solde': solde}, f, indent=4, ensure_ascii=False)  #ecrire sous forme de dictionnaire
 
 def ecrire_historique(historique):
-    with open('historique.json', 'w', encoding='utf-8') as f:
+    with open('historique.json', 'w') as f:
         json.dump(historique, f, indent=4, ensure_ascii=False) #stock l'historique sous forme de liste de dictionnaire
 
 def lire_historique():
@@ -87,7 +87,7 @@ def effectuer_transfert(solde, historique):
         'montant': montant
     })
     
-    ecrire_historique(historique)  # écrire l'historique à chaque transfert
+    ecrire_historique(historique)  # écrit l'historique à chaque transfert
     # Enregistrez le dernier transfert pour le retour
     demander_code_secret()
     print(f"Transfert de {montant} vers {numero} effectué avec succès")
@@ -126,7 +126,7 @@ def acheter_forfait(solde):
     return solde        
 
 
-def annuler_transfert(solde, dernier_transfert):    
+def annuler_transfert(solde, dernier_transfert, historique, numero):    
     if dernier_transfert is None:           
         print("Aucun transfert à annuler") 
         return solde, None             
@@ -135,12 +135,19 @@ def annuler_transfert(solde, dernier_transfert):
     if confirmation != "O":
         print("Annulation annulée")
         return solde, dernier_transfert
-    demander_code_secret()
+    if not demander_code_secret():
+        return solde, dernier_transfert  # Si le code secret est incorrect
+
     solde += dernier_transfert           
     print("Transfert annulé avec succès")
     print(f"Nouveau solde : {solde}")
-    ecrire_solde(solde)  #mettre à jour le fichier
-    return solde, None         
+    historique.append({
+        "type": 'transfert annulé',
+        "montant": dernier_transfert,
+        "numero": numero  # Enregistrez le numéro associé
+    })
+    ecrire_historique(historique)
+    return solde, None        
 
 
 def afficher_historique(historique):
@@ -150,21 +157,27 @@ def afficher_historique(historique):
     print("\n" + "="*20 + " Historique des transferts " + "="*20)
     print()
     for h in historique:
-        numero = h['numero']
+        numero = h.get('numero')
         montant = h['montant']
-        print(f"Transfert de {montant} FCFA vers {numero}")
+        if h['type'] == 'transfert annulé':
+            print(f"Transfert de {montant} FCFA vers {numero} - Satus: Annulé")
+        else:
+            print(f"Transfert de {montant} FCFA vers {numero}")
 
-
+        
 def service_ussd():
     code_ussd = "#144#"
     saisie = input("Composez le code USSD : ")
     while saisie != code_ussd:
         print("Code invalide")
         saisie = input("Composez le code USSD : ")
+
     dernier_transfert = None
-    solde = lire_solde()  #lire le solde à partir du fichier
-    historique = lire_historique()  #charger l'historique au démarrage
+    solde = lire_solde()  # lire le solde à partir du fichier
+    historique = lire_historique()  # charger l'historique au démarrage
+    
     dernier_transfert = historique[-1]['montant'] if historique else None
+
     print("Bienvenue sur Orange Money")
     choix = ""
     while choix != "7":
@@ -175,11 +188,19 @@ def service_ussd():
         elif choix == "2":
             solde = acheter_credit(solde)
         elif choix == "3":
-            solde, dernier_transfert = effectuer_transfert(solde, historique) #passer l'historique
+            solde, dernier_transfert = effectuer_transfert(solde, historique)  # passer l'historique
         elif choix == "4":
             solde = acheter_forfait(solde)
         elif choix == "5":
-            solde, dernier_transfert = annuler_transfert(solde, dernier_transfert)
+            if dernier_transfert is not None:
+                # Extraire le numero du dernier transfert
+                numero = next((h['numero'] for h in historique if h['montant'] == dernier_transfert and h['type'] == 'transfert'), None)
+                if numero is not None:
+                    solde, dernier_transfert = annuler_transfert(solde, dernier_transfert, historique, numero)
+                else:
+                    print("Aucun numéro associé au dernier transfert.")
+            else:
+                print("Aucun transfert à annuler")
         elif choix == "6":
             afficher_historique(historique)
         elif choix == "7":
