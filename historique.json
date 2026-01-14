@@ -1,3 +1,17 @@
-[{"type": "transfert", "numero": "774562766", "montant": 700},
- {"type": "transfert", "numero": "772907865", "montant": 800}
+[
+    {
+        "type": "transfert",
+        "numero": "776655420",
+        "montant": 500.0
+    },
+    {
+        "type": "transfert",
+        "numero": "775131348",
+        "montant": 1000.0
+    },
+    {
+        "type": "transfert",
+        "numero": "789086547",
+        "montant": 700.0
+    }
 ]
