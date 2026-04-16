@@ -24,7 +24,7 @@ def ecrire_solde(solde):
         json.dump({'solde': solde}, f, indent=4, ensure_ascii=False)  #ecrire sous forme de dictionnaire
 
 def ecrire_historique(historique):
-    with open('historique.json', 'w') as f:
+    with open('historique.json', 'w', encoding='utf-8') as f:
         json.dump(historique, f, indent=4, ensure_ascii=False) #stock l'historique sous forme de liste de dictionnaire
 
 def lire_historique():
