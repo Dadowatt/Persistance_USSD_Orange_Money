@@ -2,10 +2,10 @@ import json
 code_secret = "1236"
 
 def afficher_menu_principal():
-    print("\n----- ORANGE MONEY -----")
+    print("\n" + "="*20 + " ORANGE MONEY " + "="*20)
     print("1. Consulter le solde")
-    print("2. Acheter du crédit")
-    print("3. Effectuer un transfert")
+    print("2. Acheter du crédit téléphonique")
+    print("3. Effectuer un transfert d'argent")
     print("4. Acheter un forfait Internet")
     print("5. Annuler le dernier transfert")
     print("6. Afficher l'historique des transferts")
@@ -141,6 +141,7 @@ def annuler_transfert(solde, dernier_transfert, historique, numero):
     solde += dernier_transfert           
     print("Transfert annulé avec succès")
     print(f"Nouveau solde : {solde}")
+    ecrire_solde(solde)
     historique.append({
         "type": 'transfert annulé',
         "montant": dernier_transfert,
@@ -176,13 +177,18 @@ def service_ussd():
     solde = lire_solde()  # lire le solde à partir du fichier
     historique = lire_historique()  # charger l'historique au démarrage
     
-    dernier_transfert = historique[-1]['montant'] if historique else None
-
+    dernier_transfert = next(
+    (h['montant'] for h in reversed(historique) if h['type'] == 'transfert'),
+    None
+    )
+    
+    print()
     print("Bienvenue sur Orange Money")
     choix = ""
     while choix != "7":
         afficher_menu_principal()
         choix = input("Choisissez une option : ")
+        print()
         if choix == "1":
             consulter_solde(solde)
         elif choix == "2":
